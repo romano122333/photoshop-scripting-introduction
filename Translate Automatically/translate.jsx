@@ -42,6 +42,15 @@ This script was partially generated with the assistance of large language models
 var translationFile = File.openDialog("Please select", "csv:*.csv");
 const ouputFolder = Folder.selectDialog("Select the output folder:");
 const doc = app.activeDocument;
+const exportOptions = {
+    format: SaveDocumentType.PNG, // You can use SaveDocumentType.JPEG or SaveDocumentType.COMPUSERVEGIF as well
+    quality: 40,
+    PNG8: true,
+    interlaced: false,
+    transparency: true,
+    includeProfile: false
+};
+
 
 function main(translationFile) {
     if (!translationFile) {
@@ -49,18 +58,21 @@ function main(translationFile) {
         return;
     }
 
+    // Check if the CSV file is at least 2 lines long
     var translations = readCSV(translationFile.fsName);
     if (translations.length === 1) {
         alert("No translations found in the CSV file.");
         return;
     }
 
+    // Gathering a list of names of text layers to identify in the document
     textToReplace = [];
     for (var i = 0; i < translations[0].length; i++) {
         var textLayerName = translations[0][i];
         textToReplace.push(textLayerName);
     }
 
+    // Gathering a list of text layers to replace and checking if they exist
     var textLayerList = []
     for (var i = 1; i < textToReplace.length; i++) {
         var textLayerName = textToReplace[i];
@@ -76,6 +88,7 @@ function main(translationFile) {
         }
     }
 
+    // Loop through the translations and replace the text in the layers
     for (var i = 1; i < translations.length; i++) {
         var language = translations[i][0];
         for (var j = 1; j < translations[i].length; j++) {
@@ -83,12 +96,24 @@ function main(translationFile) {
             var textLayer = textLayerList[j-1];
             textLayer.textItem.contents = newText;
         }
-        exportDocument(language);
+
+        // Export the document with the language suffix
+        exportPath = ouputFolder + "/" + doc.name.replace(/\.[^\.]+$/, "") + "_" + language + ".png";
+        exportDocument(exportPath, exportOptions);
     }
-    for (var k=0; k < textLayerList.length; k++) {
+
+    // Modifying the text layers to their original content
+    for (var k=0; k < textLayerList.length-1; k++) {
         textLayerList[k].textItem.contents = translations[0][k+1];
     }
 }
+
+/****************************************************************
+ * 
+ * Reusable functions
+ * 
+*****************************************************************/
+
 
 // Functions that reads the CSV file and extracts the data
 function readCSV(filePath) {
@@ -122,19 +147,26 @@ function findLayerByName(doc, name) {
     return null;
 }
 
-// Export the document as PNG
-function exportDocument(suffix) {
-    var exportOptions = new ExportOptionsSaveForWeb();
-    exportOptions.format = SaveDocumentType.PNG;
-    exportOptions.PNG8 = true;
-    exportOptions.transparency = true;
-    exportOptions.includeProfile = false;
-    exportOptions.interlaced = false;
-    exportOptions.quality = 40;
-    var folderPath = doc.path;
+// Export the document with the specified options
+function exportDocument(exportPath, options) {
+    var exportOptionsDocument = new ExportOptionsSaveForWeb();
+    
+    exportOptionsDocument.format = options.format || SaveDocumentType.PNG;
+    exportOptionsDocument.PNG8 = options.PNG8 !== undefined ? options.PNG8 : true;
+    exportOptionsDocument.transparency = options.transparency !== undefined ? options.transparency : true;
+    exportOptionsDocument.includeProfile = options.includeProfile !== undefined ? options.includeProfile : false;
+    exportOptionsDocument.interlaced = options.interlaced !== undefined ? options.interlaced : false;
+    exportOptionsDocument.quality = options.quality !== undefined ? options.quality : 40;
+    
+    if (options.blur !== undefined) exportOptionsDocument.blur = options.blur;
+    if (options.optimized !== undefined) exportOptionsDocument.optimized = options.optimized;
+    if (options.dither !== undefined) exportOptionsDocument.dither = options.dither;
+    if (options.colors !== undefined) exportOptionsDocument.colors = options.colors;
+    if (options.lossy !== undefined) exportOptionsDocument.lossy = options.lossy;
 
-    var file = new File(ouputFolder + "/" + doc.name.replace(/\.[^\.]+$/, "") + "_" + suffix);
-    app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptions);
+    var file = new File(exportPath);
+    app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptionsDocument);
 }
 
+// Calling the main function
 main(translationFile);

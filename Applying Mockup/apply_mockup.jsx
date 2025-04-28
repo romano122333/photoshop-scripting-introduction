@@ -46,6 +46,15 @@ This script was partially generated with the assistance of large language models
 // Layer names in the mockup
 const designLayerName = "Place your design here";
 const colorLayerName = "Color";
+const exportOptions = {
+    format: SaveDocumentType.PNG, // You can use SaveDocumentType.JPEG or SaveDocumentType.COMPUSERVEGIF as well
+    quality: 40,
+    PNG8: true,
+    interlaced: false,
+    transparency: true,
+    includeProfile: false
+};
+
 
 // Gathering arguments
 var imagesFolderPath = arguments[0];
@@ -72,12 +81,13 @@ function main(imagesFolderPath, exportFolderPath, csvFilePath, psdFilePath) {
     // Applying the color and replacing the design
     for (var i = 1; i < csvData.length; i++) {
         var entry = csvData[i];
-        var designName = entry.filename;
-        var hexColor = entry.color;
+        var designName = entry[0];
+        var hexColor = entry[1];
 
         applyColorToLayer(doc, colorLayerName, hexColor);
         replaceDesign(doc, imagesFolderPath, designName, designLayerName);
-        exportDocument(exportFolderPath, designName);
+        var exportPath = exportFolderPath + "/" + baseName;
+        exportDocument(exportPath, exportOptions);
     }
 
     app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
@@ -95,9 +105,7 @@ function readCSV(filePath) {
     while (!file.eof) {
         var line = file.readln();
         var fields = line.split(",");
-        if (fields.length >= 2) {
-            data.push({ filename: fields[0], color: fields[1] });
-        }
+        data.push(fields);
     }
     file.close();
     return data;
@@ -113,7 +121,8 @@ function stringExists(str, list) {
     return false;
 }
 
-// Apply color to specific layer
+// Apply color to the whole layer
+// Dependencies : findLayerByName, hexToSolidColor
 function applyColorToLayer(doc, layerName, hexColor) {
     var targetLayer = findLayerByName(doc, layerName);
     if (!targetLayer) {
@@ -163,14 +172,15 @@ function hexToSolidColor(hex) {
 }
 
 // Replace the design in the mockup
-function replaceDesign(doc, imageFolderPath, designName, targetLayerName) {
+// Dependencies : findLayerByName, centerLayer, resizeLayer
+function replaceDesign(doc, imageFolderPath, imageName, targetLayerName) {
     var targetLayer = findLayerByName(doc, targetLayerName);
     if (!targetLayer) {
         alert('Layer "' + targetLayerName + '" was not found. Make sure that it corresponds to the actual layer name.');
         return;
     }
 
-    var imagePath = imageFolderPath + "/" + designName;
+    var imagePath = imageFolderPath + "/" + imageName;
     var imageFile = new File(imagePath);
 
     if (!imageFile.exists) {
@@ -241,4 +251,26 @@ function exportDocument(folderPath, baseName) {
     app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptions);
 }
 
+// Export the document with the specified options
+function exportDocument(exportPath, options) {
+    var exportOptionsDocument = new ExportOptionsSaveForWeb();
+    
+    exportOptionsDocument.format = options.format || SaveDocumentType.PNG;
+    exportOptionsDocument.PNG8 = options.PNG8 !== undefined ? options.PNG8 : true;
+    exportOptionsDocument.transparency = options.transparency !== undefined ? options.transparency : true;
+    exportOptionsDocument.includeProfile = options.includeProfile !== undefined ? options.includeProfile : false;
+    exportOptionsDocument.interlaced = options.interlaced !== undefined ? options.interlaced : false;
+    exportOptionsDocument.quality = options.quality !== undefined ? options.quality : 40;
+    
+    if (options.blur !== undefined) exportOptionsDocument.blur = options.blur;
+    if (options.optimized !== undefined) exportOptionsDocument.optimized = options.optimized;
+    if (options.dither !== undefined) exportOptionsDocument.dither = options.dither;
+    if (options.colors !== undefined) exportOptionsDocument.colors = options.colors;
+    if (options.lossy !== undefined) exportOptionsDocument.lossy = options.lossy;
+
+    var file = new File(exportPath);
+    app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptionsDocument);
+}
+
+// Calling the main function
 main(imagesFolderPath, outputPath, csvPath, psdPath);

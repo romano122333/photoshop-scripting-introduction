@@ -39,7 +39,7 @@ This script was partially generated with the assistance of large language models
 
 #target photoshop
 
-var translationFile = File.openDialog("Please select", "csv:*.csv");
+var translationFile = File.openDialog("Select the csv containing the information:", "csv:*.csv");
 const ouputFolder = Folder.selectDialog("Select the output folder:");
 const doc = app.activeDocument;
 const exportOptions = {
@@ -103,9 +103,10 @@ function main(translationFile) {
     }
 
     // Modifying the text layers to their original content
-    for (var k=0; k < textLayerList.length-1; k++) {
+    for (var k=0; k < textLayerList.length; k++) {
         textLayerList[k].textItem.contents = translations[0][k+1];
     }
+    alert("Export completed. Check the output folder: " + ouputFolder);
 }
 
 /****************************************************************
@@ -113,7 +114,6 @@ function main(translationFile) {
  * Reusable functions
  * 
 *****************************************************************/
-
 
 // Functions that reads the CSV file and extracts the data
 function readCSV(filePath) {

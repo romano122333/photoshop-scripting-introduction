@@ -55,7 +55,6 @@ const exportOptions = {
     includeProfile: false
 };
 
-
 // Gathering arguments
 var imagesFolderPath = arguments[0];
 var outputPath = arguments[1];
@@ -86,12 +85,18 @@ function main(imagesFolderPath, exportFolderPath, csvFilePath, psdFilePath) {
 
         applyColorToLayer(doc, colorLayerName, hexColor);
         replaceDesign(doc, imagesFolderPath, designName, designLayerName);
-        var exportPath = exportFolderPath + "/" + baseName;
+        var exportPath = exportFolderPath + "/" + designName;
         exportDocument(exportPath, exportOptions);
     }
 
     app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
 }
+
+/****************************************************************
+ * 
+ * Reusable functions
+ * 
+*****************************************************************/
 
 // Functions that reads the CSV file and extracts the data
 function readCSV(filePath) {
@@ -235,20 +240,6 @@ function resizeLayer(movingLayer, referenceLayer) {
     var heightRatio = height / currentHeight;
 
     movingLayer.resize(widthRatio * 100, heightRatio * 100);
-}
-
-// Export the document as PNG
-function exportDocument(folderPath, baseName) {
-    var exportOptions = new ExportOptionsSaveForWeb();
-    exportOptions.format = SaveDocumentType.PNG;
-    exportOptions.PNG8 = true;
-    exportOptions.transparency = true;
-    exportOptions.includeProfile = false;
-    exportOptions.interlaced = false;
-    exportOptions.quality = 40;
-
-    var file = new File(folderPath + "/" + baseName);
-    app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptions);
 }
 
 // Export the document with the specified options

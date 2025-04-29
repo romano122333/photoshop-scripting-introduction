@@ -54,6 +54,11 @@ const exportOptions = {
 function main(imagePath, exportFolder, targetWidth, targetHeight) {
     var doc = openImage(imagePath);
 
+    var targetRatio = targetWidth / targetHeight;
+    var imgWidth = doc.width;
+    var imgHeight = doc.height;
+    var imgRatio = imgWidth / imgHeight;
+
     // Logic of resizing and cropping:
     // --> If the image ratio is smaller than the target ratio, the width is the limiting factor, so we resize the image to the target width and crop the top and bottom
     // --> If the image ratio is larger than the target ratio, the height is the limiting factor, so we resize the image to the target height and crop the left and right
@@ -65,15 +70,21 @@ function main(imagePath, exportFolder, targetWidth, targetHeight) {
     } else if (imgRatio < targetRatio) {
         doc.resizeImage(UnitValue(targetWidth, "px"), null, null, ResampleMethod.BICUBIC);
         var excessHeight = doc.height - targetHeight;
-        doc.crop([0, excessHeight / 2, doc.width, doc.height - excessHeight / 2]); // Crop centré en haut et en bas
+        doc.crop([0, excessHeight / 2, doc.width, doc.height - excessHeight / 2]);
     } else {
         doc.resizeImage(UnitValue(targetWidth, "px"), UnitValue(targetHeight, "px"), null, ResampleMethod.BICUBIC);
     }
 
-    var exportPathFile = exportFolder + "/" + doc.name.replace(/\.[^\.]+$/, "") + "_web"
-    exportDocument(exportPathFile, exportOptions)
+    var exportPathFile = exportFolder + "/" + doc.name.replace(/\.[^\.]+$/, "") + "_resized.png";
+    exportDocument(exportPathFile, exportOptions);
     doc.close(SaveOptions.DONOTSAVECHANGES);
 }
+
+/****************************************************************
+ * 
+ * Reusable functions
+ * 
+*****************************************************************/
 
 // Function to open the image
 function openImage(imagePath) {
@@ -105,3 +116,5 @@ function exportDocument(exportPath, options) {
     var file = new File(exportPath);
     app.activeDocument.exportDocument(file, ExportType.SAVEFORWEB, exportOptionsDocument);
 }
+
+main(imagePath, exportFolder, targetWidth, targetHeight);

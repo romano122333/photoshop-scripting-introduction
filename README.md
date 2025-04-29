@@ -23,7 +23,7 @@ const exportOptions = {
 
 Explicative GIF:
 
-![Applying Mockup GIF](gif/Applying Mockup GIF.gif)
+![Applying Mockup GIF](Applying%20Mockup%20GIF.gif)
 
 ### Description
 This script automates the process of applying a design to a mockup in Photoshop. It reads a CSV file containing design names and colors, applies the specified color to a designated layer, replaces the design in the mockup, and exports the final image. The script is designed to be run from the command line with arguments passed to it.
@@ -49,7 +49,7 @@ This script automates the process of applying a design to a mockup in Photoshop.
 
 ## Batch PNG Resize
 
-![Batch PNG Resize GIF](images/Batch PNG Resize GIF.gif)
+![Batch PNG Resize GIF](gif/Batch%20PNG%20Resize%20GIF.gif)
 
 ### Description
 This script resizes and crops images to a target size, then exports them as JPEGs with a specified quality. It is designed to be run from the command line with arguments passed to it.
@@ -67,7 +67,7 @@ This script resizes and crops images to a target size, then exports them as JPEG
 
 ## Applying Watermark
 
-![Applying Watermark GIF](images/Applying Watermark GIF.gif)
+![Applying Watermark GIF](images/Applying%20Watermark%20GIF.gif)
 
 ### Description
 This script applies a watermark to images by tiling the watermark across the document. It checks if the number of watermarks required is reasonable and exports the watermarked images to an output folder. The script is designed to be run from the command line with arguments passed to it.
@@ -102,7 +102,7 @@ This script applies a watermark to images by tiling the watermark across the doc
 
 ## Translate Automatically
 
-![Translate Automatically GIF](images/Translate Automatically GIF.gif)
+![Translate Automatically GIF](images/Translate%20Automatically%20GIF.gif)
 
 ### Description
 This script automates the translation of Photoshop text layers. It identifies text layers, replaces their content with translations from a CSV file, and exports the translated file as a PNG with a language-specific suffix.

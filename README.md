@@ -45,7 +45,7 @@ const exportOptions = {
 
 ## Batch PNG Resize
 
-![Batch PNG Reisze GIF](images/Batch PNG Resize GIF.gif)
+![Batch PNG Resize GIF](images/Batch PNG Resize GIF.gif)
 
 ### Description
 This script resizes and crops images to a target size, then exports them as JPEGs with a specified quality. It is designed to be run from the command line with arguments passed to it.
@@ -63,7 +63,7 @@ This script resizes and crops images to a target size, then exports them as JPEG
 
 ## Applying Watermark
 
-![Watermark Application GIF](images/Watermark Application GIF.gif)
+![Applying Watermark GIF](images/Applying Watermark GIF.gif)
 
 ### Description
 This script applies a watermark to images by tiling the watermark across the document. It checks if the number of watermarks required is reasonable and exports the watermarked images to an output folder. The script is designed to be run from the command line with arguments passed to it.
